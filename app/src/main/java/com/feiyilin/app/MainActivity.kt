@@ -1,8 +1,12 @@
 package com.feiyilin.app
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -10,10 +14,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.*
 import com.squareup.picasso.Picasso
+import java.io.File
+import java.io.IOException
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : FormActivity() {
@@ -27,7 +35,11 @@ class MainActivity : FormActivity() {
         adapter?.apply {
             +FormItemSection().title("Text").tag("sec_text").apply {
                 enableCollapse()
-                +FormItemFile().tag("file").title("File Test").onCameraClicked {}.onGalleryClicked {}.galleryOnly(false)
+                +FormItemFile().tag("file").title("File Test").onCameraClicked {
+
+                }.onGalleryClicked {
+
+                }.galleryOnly(false)
                 +FormItemText().title("Text").tag("text").required()
                 +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon()
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
@@ -405,6 +417,47 @@ class MainActivity : FormActivity() {
             return super.onEditorAction(item, actionId, viewHolder)
         }
     }
+
+    lateinit var currentPhotoPath: String
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.example.android.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
+            }
+        }
+    }
 }
 
 open class FormItemImage : FormItem() {
@@ -433,4 +486,6 @@ class FormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
             }
         }
     }
+
+
 }
