@@ -272,7 +272,7 @@ open class FormItemValue : FormItem() {
     var valueColor: Int? = null
     var hint: String = ""
     var hintColor: Int? = null
-    var gravity: Int = Gravity.END
+    var gravity: Int = Gravity.START
     var readOnly: Boolean = false
     var imeOptions: Int =
         EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NAVIGATE_NEXT or EditorInfo.IME_FLAG_NAVIGATE_PREVIOUS

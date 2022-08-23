@@ -5,4 +5,5 @@
     <color name="colorFormTitle">#777777</color>
     <color name="colorFormSubtitle">#777777</color>
     <color name="colorFormHint">#a8a8a8</color>
+    <color name="colorFormFieldDark">#f3f3f3</color>
 </resources>

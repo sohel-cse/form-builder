@@ -27,6 +27,7 @@ class MainActivity : FormActivity() {
         adapter?.apply {
             +FormItemSection().title("Text").tag("sec_text").apply {
                 enableCollapse()
+                +FormItemFile().tag("file").title("File Test").onCameraClicked {}.onGalleryClicked {}.galleryOnly(false)
                 +FormItemText().title("Text").tag("text").required()
                 +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon()
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
@@ -45,7 +46,7 @@ class MainActivity : FormActivity() {
 
                 +FormItemText().title("Phone").tag("phone")
                     .inputType(EditorInfo.TYPE_CLASS_PHONE).imeOptions(EditorInfo.IME_ACTION_PREVIOUS)
-                    .onEditorAction {item, _, _ ->
+                    .onEditorAction { item, _, _ ->
                         Toast.makeText(this@MainActivity, "EditorAction on ${item.title}", Toast.LENGTH_SHORT).show()
                         false
                     }
@@ -71,7 +72,7 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("Navigation item").apply {
                 enableCollapse()
                 //FormItemLabel().title("Label").tag("label"),
-                +FormItemNav().title("Nav item").tag("nav_item").onItemClicked {item, _ ->
+                +FormItemNav().title("Nav item").tag("nav_item").onItemClicked { item, _ ->
                     Toast.makeText(this@MainActivity, "Click on ${item.title}", Toast.LENGTH_SHORT).show()
                 }
                 +FormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")
@@ -240,7 +241,7 @@ class MainActivity : FormActivity() {
                 +FormItemSelect().tag("select").title("Select").value("Monday")
                     .selectorTitle("Select day of week")
                     .options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
-                    .onValueChanged {item ->
+                    .onValueChanged { item ->
                         Toast.makeText(this@MainActivity, "${item.title} value changed to ${item.value}", Toast.LENGTH_SHORT).show()
                     }
                 +FormItemChoice().tag("choice").title("Choice").value("Tuesday")

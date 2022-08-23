@@ -33,11 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="@null"
-                android:imeOptions="actionNext"
-                android:inputType="textNoSuggestions"
-                android:maxLines="1"
+                style="@style/IMSInput"
                 android:text="value"
-                android:gravity="end"
                 android:textColor="@color/colorFormText"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
