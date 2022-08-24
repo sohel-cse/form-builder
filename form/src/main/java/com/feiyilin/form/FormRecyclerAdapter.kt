@@ -2,7 +2,8 @@ package com.feiyilin.form
 
 import android.app.Activity
 import android.os.Handler
-import android.view.*
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,7 @@ interface FormItemCallback {
     fun onEditorAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
         return false
     }
+
     fun getMinItemHeight(item: FormItem): Int {
         return 0
     }
@@ -226,7 +228,7 @@ open class FormRecyclerAdapter(
 
                 override fun onActionClicked(pos: Int, action: FormSwipeAction) {
                     super.onActionClicked(pos, action)
-                    itemBy(pos)?.let {item ->
+                    itemBy(pos)?.let { item ->
                         var processed = false
                         recyclerView.findViewHolderForAdapterPosition(pos)?.let {
                             processed = onFormItemCallback.onSwipedAction(item, action, it)
@@ -261,7 +263,7 @@ open class FormRecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return sections.sumBy { it.sizeVisible}
+        return sections.sumBy { it.sizeVisible }
     }
 
     /**
@@ -303,7 +305,7 @@ open class FormRecyclerAdapter(
             return
         }
         val index = indexOf(item)
-        if (index != -1 ) {
+        if (index != -1) {
             activity?.let {
                 it.runOnUiThread {
                     notifyItemChanged(index)
@@ -434,7 +436,7 @@ open class FormRecyclerAdapter(
                 } else {
                     // move to the section before
 
-                    var secDest : FormItemSection? = it
+                    var secDest: FormItemSection? = it
                     var offsetDest = offset
                     if (secDest?.collapsed == true && dest > 0) {
                         // the destination section is not able to receive the new item as it is
@@ -517,7 +519,7 @@ open class FormRecyclerAdapter(
     fun sectionBy(tag: String): FormItemSection? {
         for (sec in sections) {
             if (sec.tag == tag) {
-               return sec
+                return sec
             }
         }
         return null
@@ -549,7 +551,7 @@ open class FormRecyclerAdapter(
      * @return the item or null if not found
      */
     fun itemBy(index: Int): FormItem? {
-        var item : FormItem? = null
+        var item: FormItem? = null
         var count = 0
         for (sec in sections) {
             if (index < count + sec.sizeVisible) {
@@ -566,7 +568,7 @@ open class FormRecyclerAdapter(
      * @param item item to retrieve the index
      * @return the item index or -1 if not found
      */
-    fun indexOf(item: FormItem) : Int {
+    fun indexOf(item: FormItem): Int {
         var count = 0
         for (sec in sections) {
             if (sec == item.section) {
@@ -578,7 +580,7 @@ open class FormRecyclerAdapter(
             }
             count += sec.sizeVisible
         }
-        require(false) {"item not in adapter"}
+        require(false) { "item not in adapter" }
         return -1
     }
 
@@ -590,7 +592,7 @@ open class FormRecyclerAdapter(
     fun hide(section: FormItemSection, hide: Boolean): Boolean {
         // show/hide a section
         if (section.adapter != this) {
-             return false
+            return false
         }
         if (section.hidden == hide) {
             return true
@@ -670,7 +672,7 @@ open class FormRecyclerAdapter(
         if (sections.indexOf(this) != -1 || adapter != null) {
             return
         }
-        add(section=this)
+        add(section = this)
     }
 
     /**
@@ -679,7 +681,7 @@ open class FormRecyclerAdapter(
      * @param section section to be added
      * @return true if succeed
      */
-     fun add(secIndex: Int, section: FormItemSection): Boolean {
+    fun add(secIndex: Int, section: FormItemSection): Boolean {
         if (sections.indexOf(section) != -1 || secIndex < 0 || secIndex > sections.size || section in sections) {
             return false
         }
@@ -711,13 +713,13 @@ open class FormRecyclerAdapter(
      * @param section the section to be added
      * @return true if succeed
      */
-    fun add(after: FormItem, section:FormItemSection): Boolean {
+    fun add(after: FormItem, section: FormItemSection): Boolean {
         val sec = after.section ?: return false
         val index = sections.indexOf(sec)
         if (index == -1) {
             return false
         }
-        return add(index+1, section)
+        return add(index + 1, section)
     }
 
 
@@ -799,5 +801,15 @@ open class FormRecyclerAdapter(
                 break
             }
         }
+    }
+
+    fun getAllItems(includeHidden: Boolean = false) = _sections.flatMap { section -> section.items.filter { (!it.hidden || includeHidden) && it.canEvaluate } }
+
+    fun validateAllItems() = getAllItems().map { formItem ->
+        val failedRules = formItem.rules.filter { it.enforceOnHidden || !formItem.hidden }.filterNot { it.validate(formItem) }
+        formItem.combinedEvaluationValue = failedRules.isEmpty()
+        formItem.combinedFailureMessage = failedRules.joinToString { it.failureMessage() }
+        updateItem(formItem)
+        Pair(formItem.tag, formItem.combinedFailureMessage)
     }
 }

@@ -30,4 +30,15 @@
         app:layout_constraintStart_toStartOf="@+id/formElementTitle"
         app:layout_constraintTop_toBottomOf="@+id/formElementTitle"
         tools:text="subtitle" />
+
+    <ImageView
+        android:id="@+id/errorImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_baseline_error_24"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

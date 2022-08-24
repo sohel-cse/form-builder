@@ -3,11 +3,11 @@ package com.feiyilin.form
 import android.graphics.Color
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.util.Size
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.Exception
 import java.text.NumberFormat
 import java.util.*
 
@@ -66,29 +66,32 @@ fun <T : FormSwipeAction> T.padding(padding: Float) = apply {
 }
 
 open class FormItem {
-     class Separator {
-         var hidden: Boolean = false
-         var left: Int = 0
-         var right: Int = 0
-         var top: Int = 0
-         var bottom: Int = 0
-         companion object {
-             fun None() : Separator {
-                 val sep = Separator()
-                 sep.hidden = true
-                 return sep
-             }
-             fun Insets(left: Int, top: Int, right: Int, bottom: Int) : Separator {
-                 val sep = Separator()
-                 sep.left = left
-                 sep.top = top
-                 sep.right = right
-                 sep.bottom = bottom
-                 return sep
-             }
-         }
+    class Separator {
+        var hidden: Boolean = false
+        var left: Int = 0
+        var right: Int = 0
+        var top: Int = 0
+        var bottom: Int = 0
+
+        companion object {
+            fun None(): Separator {
+                val sep = Separator()
+                sep.hidden = true
+                return sep
+            }
+
+            fun Insets(left: Int, top: Int, right: Int, bottom: Int): Separator {
+                val sep = Separator()
+                sep.left = left
+                sep.top = top
+                sep.right = right
+                sep.bottom = bottom
+                return sep
+            }
+        }
     }
 
+    val TAG = "FormItem"
     var title: String = ""
     var titleColor: Int? = null
     var subTitle: String = ""
@@ -106,16 +109,26 @@ open class FormItem {
     var leadingSwipe = listOf<FormSwipeAction>()
     var trailingSwipe = listOf<FormSwipeAction>()
     var section: FormItemSection? = null
+    var rules: MutableList<ValueValidationRule> = mutableListOf()
+    open var canEvaluate = false
+    var combinedEvaluationValue = true
+    var combinedFailureMessage = ""
 
     // callback
     var onSetup: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
-    var onValueChanged: (() -> Unit)? = null
+    var onValueChanged: (() -> Unit)? = {
+        Log.i(TAG, "changed: ")
+
+    }
     var onItemClicked: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
     var onTitleImageClicked: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
     var onStartReorder: ((viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
     var onMoveItem: ((src: Int, dest: Int) -> Boolean)? = null
     var onSwipedAction: ((action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
     var onEditorAction: ((actionId: Int, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
+    open fun getValueString(): String {
+        throw IllegalAccessException()
+    }
 }
 
 fun <T : FormItem> T.title(title: String) = apply {
@@ -160,6 +173,11 @@ fun <T : FormItem> T.draggable(draggable: Boolean = true) = apply {
 
 fun <T : FormItem> T.required(required: Boolean = true) = apply {
     this.required = required
+    rules.add(RequiredRule())
+}
+
+fun <T : FormItem> T.addRule(rule: ValueValidationRule) = apply {
+    rules.add(rule)
 }
 
 fun <T : FormItem> T.hidden(hidden: Boolean = true) = apply {
@@ -205,6 +223,9 @@ fun <T : FormItem> T.onValueChanged(callback: ((item: T) -> Unit)?) = apply {
         this.onValueChanged = null
     } else {
         this.onValueChanged = {
+            val failedRules = rules.filterNot { it.validate(this) }
+            combinedEvaluationValue = failedRules.isEmpty()
+            combinedFailureMessage = failedRules.joinToString { it.failureMessage() }
             callback.invoke(this)
         }
     }
@@ -286,12 +307,16 @@ open class FormItemValue : FormItem() {
     open fun toDisplay(): String {
         return toDisplayString?.invoke() ?: ""
     }
+
     open fun toEdit(): String {
         return toEditString?.invoke() ?: ""
     }
+
     open fun from(value: String): Boolean {
         return fromString?.invoke(value) ?: false
     }
+
+    override var canEvaluate = true
 }
 
 fun <T : FormItemValue> T.toDisplayString(callback: ((item: T) -> String)?) = apply {
@@ -362,6 +387,7 @@ fun <T : FormItemValue> T.clearIcon(clearIcon: Boolean = true) = apply {
 
 open class FormItemText : FormItemValue() {
     var value: String = ""
+    override fun getValueString(): String = value
 
     init {
         toDisplayString = {
@@ -381,12 +407,13 @@ open class FormItemText : FormItemValue() {
     }
 }
 
-fun <T : FormItemText > T.value(value: String) = apply {
+fun <T : FormItemText> T.value(value: String) = apply {
     this.value = value
 }
 
 open class FormItemPassword : FormItemText() {
     var shownPassword: Boolean = false
+
     init {
         this.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
     }
@@ -394,6 +421,7 @@ open class FormItemPassword : FormItemText() {
 
 open class FormItemNumber : FormItemValue() {
     var value: Number = 0
+    override fun getValueString(): String = NumberFormat.getInstance().format(value)
 
     init {
         this.inputType =
@@ -466,6 +494,8 @@ fun <T : FormItemAction> T.alignment(alignment: Int) = apply {
 
 abstract class FormItemToggle : FormItem() {
     var isOn: Boolean = false
+    override var canEvaluate = true
+    override fun getValueString() = isOn.toString()
 }
 
 fun <T : FormItemToggle> T.isOn(isOn: Boolean = true) = apply {
@@ -554,7 +584,8 @@ open class FormItemDate : FormItem() {
     var dateFormat: String = "MM/dd/yyyy"
     var dateColor: Int? = null
     var timeColor: Int? = null
-
+    override var canEvaluate = true
+    override fun getValueString(): String = date.toString()
     var year: Int
         get() {
             val calendar: Calendar = Calendar.getInstance()
@@ -659,6 +690,7 @@ open class FormItemSelect : FormItem() {
     var value: String = ""
     var selectorTitle = ""
     var options: Array<String> = arrayOf()
+    override fun getValueString(): String = value
 }
 
 fun <T : FormItemSelect> T.value(value: String) = apply {

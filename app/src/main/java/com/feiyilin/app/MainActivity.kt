@@ -74,7 +74,7 @@ class MainActivity : FormActivity() {
                 +FormItemTextFloatingHint().hint("Text with floating hint").tag("text")
                     .gravity(Gravity.START)
                 +FormItemText().title("Email").tag("email")
-                    .inputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                    .inputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS).addRule(EmailRule()).required()
 
                 +FormItemText().title("Phone").tag("phone")
                     .inputType(EditorInfo.TYPE_CLASS_PHONE).imeOptions(EditorInfo.IME_ACTION_PREVIOUS)

@@ -2,6 +2,7 @@ package com.feiyilin.form
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +27,8 @@ abstract class FormActivity : AppCompatActivity() {
             }
         }
         initForm()
+
+        findViewById<Button>(R.id.submit).setOnClickListener { adapter?.validateAllItems() }
     }
 
     open var onFormItemListener: FormItemCallback? = null

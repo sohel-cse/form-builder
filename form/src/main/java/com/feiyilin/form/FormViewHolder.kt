@@ -15,6 +15,8 @@ import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -35,6 +37,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
     var titleViewWrap: View? = null
     var titleView: TextView? = null
     var subtitleView: TextView? = null
+    var errorImage: ImageView? = null
     var titleImageView: ImageView? = null
     var badgeView: ConstraintLayout? = null
     var badgeViewTitle: TextView? = null
@@ -56,6 +59,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         reorderView = itemView.findViewById(R.id.formElementReorder)
         mainView = itemView.findViewById(R.id.formElementMainLayout)
         dividerView = itemView.findViewById(R.id.formElementDivider)
+        errorImage = itemView.findViewById(R.id.errorImage)
     }
 
     open fun bind(s: FormItem, listener: FormItemCallback?) {
@@ -144,10 +148,15 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
             } else {
                 titleViewWrap?.visibility = View.GONE
             }
+            if (item.canEvaluate) {
+                errorImage?.visibility = if (!item.combinedEvaluationValue) VISIBLE else GONE
+                errorImage?.setOnClickListener { Toast.makeText(it.context, item.combinedFailureMessage, Toast.LENGTH_SHORT).show() }
+            }
         }
     }
+
     fun updateSeparator() {
-        item?.let {item ->
+        item?.let { item ->
             val separator = item.separator ?: listener?.getSeparator(item)
             val param = dividerView?.layoutParams as? ViewGroup.MarginLayoutParams
             param?.leftMargin = 0
@@ -423,9 +432,11 @@ open class FormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, paren
 open class FormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     var imageArrowUp: ImageView? = null
+
     init {
         imageArrowUp = itemView.findViewById(R.id.formElementArrowUp)
     }
+
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         itemView.setOnClickListener {
@@ -436,6 +447,7 @@ open class FormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent
         titleView?.text = s.title.toUpperCase(Locale.getDefault())
         updateCollapse()
     }
+
     fun updateCollapse() {
         (item as? FormItemSection)?.let {
             if (it.enableCollapse) {
@@ -824,6 +836,7 @@ open class FormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent:
     FormViewHolder(inflater, resource, parent) {
 
     var valueView: TextView? = null
+
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
     }
@@ -988,6 +1001,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
     var valueView: CardView? = null
     var collectionView: RecyclerView? = null
     var initialized = false
+
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
         collectionView = itemView.findViewById(R.id.formElementCollection)
@@ -1043,6 +1057,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
             }
         }
     }
+
     private var onItemClickListener = object : FormItemCallback {
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             super.onItemClicked(item, viewHolder)
@@ -1066,7 +1081,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         }
     }
 
-    class FormItemSingleColor: FormItem() {
+    class FormItemSingleColor : FormItem() {
         var color: String = ""
         var selected: Boolean = false
         var cornerRadius: Int = 20
@@ -1083,12 +1098,15 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
     fun FormItemSingleColor.cornerRadius(cornerRadius: Int) = apply {
         this.cornerRadius = cornerRadius
     }
+
     class FormSingleColorViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
         FormViewHolder(inflater, resource, parent) {
         var valueView: MaterialCardView? = null
+
         init {
             valueView = itemView.findViewById(R.id.formElementValue)
         }
+
         override fun bind(s: FormItem, listener: FormItemCallback?) {
             super.bind(s, listener)
             if (s is FormItemSingleColor) {
@@ -1172,6 +1190,7 @@ open class FormStepperViewHolder(inflater: LayoutInflater, resource: Int, parent
     protected val repeatUpdateHandler = Handler()
     protected var autoIncrement = false
     protected var autoDecrement = false
+
     inner class RptUpdater : Runnable {
         override fun run() {
             if (autoIncrement) {
@@ -1183,6 +1202,7 @@ open class FormStepperViewHolder(inflater: LayoutInflater, resource: Int, parent
             }
         }
     }
+
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
         imageAddView = itemView.findViewById(R.id.formElementAdd)
@@ -1206,14 +1226,14 @@ open class FormStepperViewHolder(inflater: LayoutInflater, resource: Int, parent
             repeatUpdateHandler.post(RptUpdater())
             false
         }
-        imageAddView?.setOnTouchListener {_, event ->
+        imageAddView?.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
                 autoDecrement = false
                 autoIncrement = false
             }
             false
         }
-        imageSubView?.setOnTouchListener {_, event ->
+        imageSubView?.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
                 autoDecrement = false
                 autoIncrement = false
@@ -1233,9 +1253,10 @@ open class FormStepperViewHolder(inflater: LayoutInflater, resource: Int, parent
             }
         }
     }
+
     fun update(increase: Boolean) {
         (item as? FormItemStepper)?.let {
-            var value = if (increase) it.value + 1 else it.value -1
+            var value = if (increase) it.value + 1 else it.value - 1
             value = value.coerceAtLeast(it.minValue)
             value = value.coerceAtMost(it.maxValue)
             if (value != it.value) {
