@@ -1,10 +1,12 @@
 package com.feiyilin.app
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.net.Uri
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -14,8 +16,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.feiyilin.app.permissions.CallBackWrapper
 import com.feiyilin.form.*
 import com.squareup.picasso.Picasso
 import java.io.File
@@ -26,8 +32,20 @@ import java.util.*
 
 class MainActivity : FormActivity() {
 
+    lateinit var activityResultMultiLauncher: ActivityResultLauncher<Array<String>>
+    lateinit var activityResultSingleLauncher: ActivityResultLauncher<String>
+
+
+    private val multiWrapper: CallBackWrapper<Map<String, Boolean>> = CallBackWrapper()
+    private val singleWrapper: CallBackWrapper<Boolean> = CallBackWrapper()
     var newItemCreated = 0
     var newSectionCreated = 0
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activityResultMultiLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions(), multiWrapper)
+        activityResultSingleLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission(), singleWrapper)
+    }
+
     override fun initForm() {
         val cal = Calendar.getInstance()
         cal.set(2020, 6, 19)
@@ -36,10 +54,12 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("Text").tag("sec_text").apply {
                 enableCollapse()
                 +FormItemFile().tag("file").title("File Test").onCameraClicked {
-
+                    dispatchTakePictureIntent(it)
                 }.onGalleryClicked {
+                    Log.i(TAG, "onGalleryClicked: $it")
+                }.onDetailClicked {
 
-                }.galleryOnly(false)
+                }.galleryOnly(true)
                 +FormItemText().title("Text").tag("text").required()
                 +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon()
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
@@ -296,6 +316,18 @@ class MainActivity : FormActivity() {
             R.layout.form_item_image,
             FormImageViewHolder::class.java
         )
+
+        adapter?.registerViewHolder(
+            FormItemFile::class.java,
+            R.layout.form_item_file,
+            FormFileViewHolder::class.java
+        )
+    }
+
+
+    fun getSingleLauncher(callback: ActivityResultCallback<Boolean>): ActivityResultLauncher<String> {
+        singleWrapper.callback = callback
+        return activityResultSingleLauncher
     }
 
     override var onFormItemListener: FormItemCallback? = object : FormItemCallback {
@@ -424,7 +456,7 @@ class MainActivity : FormActivity() {
     private fun createImageFile(): File {
         // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
             "JPEG_${timeStamp}_", /* prefix */
             ".jpg", /* suffix */
@@ -435,28 +467,37 @@ class MainActivity : FormActivity() {
         }
     }
 
-    private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
-            takePictureIntent.resolveActivity(packageManager)?.also {
-                // Create the File where the photo should go
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (ex: IOException) {
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        this,
-                        "com.example.android.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+    private fun dispatchTakePictureIntent(id: String) {
+
+
+        getSingleLauncher(ActivityResultCallback { result ->
+            if (result) Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                // Ensure that there's a camera activity to handle the intent
+                takePictureIntent.resolveActivity(packageManager)?.also {
+                    // Create the File where the photo should go
+                    val photoFile: File? = try {
+                        createImageFile()
+                    } catch (ex: IOException) {
+                        null
+                    }
+                    // Continue only if the File was successfully created
+                    photoFile?.also {
+                        val photoURI: Uri = FileProvider.getUriForFile(
+                            this,
+                            "com.example.android.fileprovider",
+                            it
+                        )
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                    }
                 }
             }
-        }
+        }).launch(Manifest.permission.CAMERA)
+    }
+
+    companion object {
+        const val REQUEST_IMAGE_CAPTURE = 5
+        const val TAG = "MainActivity"
     }
 }
 

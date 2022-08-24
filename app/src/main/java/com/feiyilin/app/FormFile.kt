@@ -2,8 +2,9 @@ package com.feiyilin.app
 
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.feiyilin.form.FormItem
 import com.feiyilin.form.FormItemCallback
@@ -16,6 +17,7 @@ open class FormItemFile : FormItem() {
     var fileUris: MutableList<Uri> = mutableListOf()
     var onCameraClicked: ((String) -> Unit)? = null
     var onGalleryClicked: ((String) -> Unit)? = null
+    var onDetailClicked: ((String) -> Unit)? = null
 }
 
 fun <T : FormItemFile> T.multiple(multiple: Boolean) = apply {
@@ -38,19 +40,24 @@ fun <T : FormItemFile> T.onGalleryClicked(onGalleryClicked: ((String) -> Unit)?)
     this.onGalleryClicked = onGalleryClicked
 }
 
+fun <T : FormItemFile> T.onDetailClicked(onDetailClicked: ((String) -> Unit)?) = apply {
+    this.onDetailClicked = onDetailClicked
+}
+
 class FormFileViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     //    private var imgView: ImageView? = null
     private var fileCount: TextView = itemView.findViewById(R.id.fileCount)
-    private var openCamera: Button = itemView.findViewById(R.id.btnOpenCamera)
-    private var openGallery: Button = itemView.findViewById(R.id.btnOpenGallery)
+    private var openCamera: LinearLayout = itemView.findViewById(R.id.btnOpenCamera)
+    private var openGallery: LinearLayout = itemView.findViewById(R.id.btnOpenGallery)
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
         if (s is FormItemFile) {
             fileCount.text = "${s.fileUris.size} file(s) selected"
             openCamera.setOnClickListener { s.onCameraClicked?.invoke(s.tag) }
             openGallery.setOnClickListener { s.onGalleryClicked?.invoke(s.tag) }
-
+            openCamera.visibility = if (s.galleryOnly) View.GONE else View.VISIBLE
         }
     }
 }
