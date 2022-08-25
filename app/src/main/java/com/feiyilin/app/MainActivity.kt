@@ -104,7 +104,7 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("Navigation item").apply {
                 enableCollapse()
                 //FormItemLabel().title("Label").tag("label"),
-                +FormItemNav().title("Nav item").tag("nav_item").onItemClicked { item, _ ->
+                +FormItemNav().title("Nav item").value("noveau").tag("nav_item").onItemClicked { item, _ ->
                     Toast.makeText(this@MainActivity, "Click on ${item.title}", Toast.LENGTH_SHORT).show()
                 }
                 +FormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")

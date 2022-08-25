@@ -570,6 +570,8 @@ fun <T : FormItemCheckCustom> T.iconOff(iconOff: Drawable?) = apply {
 
 open class FormItemNav : FormItem() {
     var value: String = ""
+    override var canEvaluate = true
+    override fun getValueString() = value
 }
 
 fun <T : FormItemNav> T.value(value: String) = apply {

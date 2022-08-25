@@ -18,6 +18,8 @@ open class FormItemFile : FormItem() {
     var onCameraClicked: ((String) -> Unit)? = null
     var onGalleryClicked: ((String) -> Unit)? = null
     var onDetailClicked: ((String) -> Unit)? = null
+    override var canEvaluate = true
+    override fun getValueString() = fileUris.joinToString { it.toString() }
 }
 
 fun <T : FormItemFile> T.multiple(multiple: Boolean) = apply {
