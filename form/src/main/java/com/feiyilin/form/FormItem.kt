@@ -113,6 +113,7 @@ open class FormItem {
     open var canEvaluate = false
     var combinedEvaluationValue = true
     var combinedFailureMessage = ""
+    var showHelp = false
 
     // callback
     var onSetup: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
@@ -126,6 +127,7 @@ open class FormItem {
     var onMoveItem: ((src: Int, dest: Int) -> Boolean)? = null
     var onSwipedAction: ((action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
     var onEditorAction: ((actionId: Int, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
+    var onHelpClicked: ((item: FormItem) -> Unit)? = null
     open fun getValueString(): String {
         throw IllegalAccessException()
     }
@@ -208,6 +210,10 @@ fun <T : FormItem> T.trailingSwipe(actions: List<FormSwipeAction>) = apply {
     this.trailingSwipe = actions
 }
 
+fun <T : FormItem> T.showHelp(showHelp: Boolean = true) = apply {
+    this.showHelp = showHelp
+}
+
 fun <T : FormItem> T.onSetup(callback: ((item: T, viewHolder: RecyclerView.ViewHolder) -> Unit)?) = apply {
     if (callback == null) {
         this.onSetup = null
@@ -239,6 +245,10 @@ fun <T : FormItem> T.onItemClicked(callback: ((item: T, viewHolder: RecyclerView
             callback.invoke(this, viewHolder)
         }
     }
+}
+
+fun <T : FormItem> T.onHelpClicked(callback: ((item: FormItem) -> Unit)?) = apply {
+    this.onHelpClicked = callback
 }
 
 fun <T : FormItem> T.onTitleImageClicked(callback: ((item: T, viewHolder: RecyclerView.ViewHolder) -> Unit)?) = apply {

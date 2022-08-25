@@ -38,6 +38,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
     var titleView: TextView? = null
     var subtitleView: TextView? = null
     var errorImage: ImageView? = null
+    var helpImage: ImageView? = null
     var titleImageView: ImageView? = null
     var badgeView: ConstraintLayout? = null
     var badgeViewTitle: TextView? = null
@@ -60,6 +61,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         mainView = itemView.findViewById(R.id.formElementMainLayout)
         dividerView = itemView.findViewById(R.id.formElementDivider)
         errorImage = itemView.findViewById(R.id.errorImage)
+        helpImage = itemView.findViewById(R.id.help)
     }
 
     open fun bind(s: FormItem, listener: FormItemCallback?) {
@@ -147,6 +149,10 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
                 titleViewWrap?.visibility = View.VISIBLE
             } else {
                 titleViewWrap?.visibility = View.GONE
+            }
+            helpImage?.visibility = if (item.showHelp) VISIBLE else GONE
+            helpImage?.setOnClickListener {
+                item.onHelpClicked?.invoke(item)
             }
             if (item.canEvaluate) {
                 errorImage?.visibility = if (!item.combinedEvaluationValue) VISIBLE else GONE

@@ -4,28 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/formElementTitleWrap"
     android:layout_width="match_parent"
-    android:paddingHorizontal="20dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp"
     android:layout_weight="1"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingHorizontal="20dp">
 
     <TextView
         android:id="@+id/formElementTitle"
+        style="@style/TextMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextMedium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 
     <TextView
         android:id="@+id/formElementSubTitle"
+        style="@style/TextMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextMedium"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="@+id/formElementTitle"
         app:layout_constraintTop_toBottomOf="@+id/formElementTitle"
@@ -33,12 +33,23 @@
 
     <ImageView
         android:id="@+id/errorImage"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
         android:src="@drawable/ic_baseline_error_24"
         android:visibility="gone"
-        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/help"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/help"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:src="@drawable/baseline_help_outline_black_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

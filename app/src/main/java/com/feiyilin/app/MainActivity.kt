@@ -61,6 +61,9 @@ class MainActivity : FormActivity() {
 
                 }.galleryOnly(true)
                 +FormItemText().title("Text").tag("text").required()
+                +FormItemText().title("Text").subTitle("with help icon").tag("help_text").clearIcon().showHelp().onHelpClicked {
+                    Toast.makeText(this@MainActivity, "Help Clicked on ${it.tag}", Toast.LENGTH_SHORT).show()
+                }
                 +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon()
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
                 +FormItemText().title("Text").subTitle("draggable").draggable()
