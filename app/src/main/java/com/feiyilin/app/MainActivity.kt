@@ -23,6 +23,7 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.app.permissions.CallBackWrapper
 import com.feiyilin.form.*
+import com.feiyilin.form.file.*
 import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException

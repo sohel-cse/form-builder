@@ -1,15 +1,7 @@
-package com.feiyilin.app
+package com.feiyilin.form.file
 
 import android.net.Uri
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
 import com.feiyilin.form.FormItem
-import com.feiyilin.form.FormItemCallback
-import com.feiyilin.form.FormViewHolder
-import com.feiyilin.form.R
 
 open class FormItemFile : FormItem() {
     var galleryOnly: Boolean = false
@@ -46,20 +38,3 @@ fun <T : FormItemFile> T.onDetailClicked(onDetailClicked: ((String) -> Unit)?) =
     this.onDetailClicked = onDetailClicked
 }
 
-class FormFileViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FormViewHolder(inflater, resource, parent) {
-    //    private var imgView: ImageView? = null
-    private var fileCount: TextView = itemView.findViewById(R.id.fileCount)
-    private var openCamera: LinearLayout = itemView.findViewById(R.id.btnOpenCamera)
-    private var openGallery: LinearLayout = itemView.findViewById(R.id.btnOpenGallery)
-
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
-        if (s is FormItemFile) {
-            fileCount.text = "${s.fileUris.size} file(s) selected"
-            openCamera.setOnClickListener { s.onCameraClicked?.invoke(s.tag) }
-            openGallery.setOnClickListener { s.onGalleryClicked?.invoke(s.tag) }
-            openCamera.visibility = if (s.galleryOnly) View.GONE else View.VISIBLE
-        }
-    }
-}

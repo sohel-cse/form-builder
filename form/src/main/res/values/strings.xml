@@ -3,5 +3,8 @@
 
     <string name="camera">CAMERA</string>
     <string name="gallery">GALLERY</string>
+    <string name="signature_hint">Draw your signature below</string>
+    <string name="clear">Clear</string>
+    <string name="done">Done</string>
 
 </resources>

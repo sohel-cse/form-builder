@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="formMainLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -11,6 +12,10 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
     <style name="TextMedium" parent="@android:style/TextAppearance.Medium">
         <item name="fontPath">fonts/RobotoCondensed-Regular.ttf</item>
@@ -29,6 +34,38 @@
     </style>
 
     <style name="TextSmall" parent="@android:style/TextAppearance.Small">
+        <item name="fontPath">fonts/RobotoCondensed-Regular.ttf</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:radius">5dp</item>
+    </style>
+
+    <style name="TextXSmall" parent="@android:style/TextAppearance.Small">
+        <item name="fontPath">fonts/RobotoCondensed-Light.ttf</item>
+        <item name="android:paddingStart">3dp</item>
+        <item name="android:paddingEnd">3dp</item>
+        <item name="android:paddingTop">1dp</item>
+        <item name="android:paddingBottom">1dp</item>
+    </style>
+
+    <style name="IconButtonPrimary" parent="Theme.MaterialComponents.Light">
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:background">@drawable/bg_icon_button_primary</item>
+        <item name="android:shadowColor">#A8A8A8</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">5</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="IconButtonDanger" parent="IconButtonPrimary">
+        <item name="android:background">@drawable/bg_icon_button_danger</item>
+    </style>
+
+    <style name="TextLarge" parent="@android:style/TextAppearance.Large">
         <item name="fontPath">fonts/RobotoCondensed-Regular.ttf</item>
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>

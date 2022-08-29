@@ -6,4 +6,12 @@
     <color name="colorFormSubtitle">#777777</color>
     <color name="colorFormHint">#a8a8a8</color>
     <color name="colorFormFieldDark">#f3f3f3</color>
+    <color name="white">#ffffff</color>
+    <color name="bg_gray">#ecedef</color>
+    <color name="colorButtonPrimary">#002981</color>
+    <color name="colorButtonPrimaryPressed">#01125e</color>
+    <color name="colorDangerDark">#9b1c1e</color>
+    <color name="colorDanger">#e44648</color>
+
+
 </resources>
