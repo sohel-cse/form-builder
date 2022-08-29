@@ -1,12 +1,16 @@
 package com.feiyilin.form
 
-import android.app.Activity
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.feiyilin.form.file.FormFileViewHolder
+import com.feiyilin.form.file.FormItemFile
+import com.feiyilin.form.signature.FormItemSignature
+import com.feiyilin.form.signature.FormSignatureViewHolder
 
 interface FormItemCallback {
     fun onSetup(item: FormItem, viewHolder: RecyclerView.ViewHolder) {}
@@ -57,9 +61,9 @@ open class FormRecyclerAdapter(
     protected var itemTouchHelper: ItemTouchHelper? = null
     protected var recyclerView: RecyclerView? = null
 
-    val activity: Activity?
+    val activity: AppCompatActivity?
         get() {
-            return recyclerView?.context as? Activity
+            return recyclerView?.context as? AppCompatActivity
         }
 
     class ViewHolderItem(
@@ -196,6 +200,11 @@ open class FormRecyclerAdapter(
                 FormItemCheckCustom::class.java,
                 R.layout.form_item_check_custom,
                 FormCheckCustomViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemSignature::class.java,
+                R.layout.form_item_signature,
+                FormSignatureViewHolder::class.java
             )
         )
     }
@@ -256,7 +265,7 @@ open class FormRecyclerAdapter(
         val s = itemBy(position)
 
         if (holder is FormViewHolder && s != null) {
-            holder.bind(s, onFormItemCallback)
+            holder.bind(s, onFormItemCallback, activity)
 
             onFormItemCallback.onSetup(s, holder)
         }

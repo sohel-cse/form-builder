@@ -20,6 +20,7 @@ import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -64,7 +65,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         helpImage = itemView.findViewById(R.id.help)
     }
 
-    open fun bind(s: FormItem, listener: FormItemCallback?) {
+    open fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
         this.item = s
         this.listener = listener
         var minHeight = s.minHeight
@@ -292,8 +293,8 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
         }
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
 
         if (s is FormItemValue) {
             itemView.setOnClickListener {
@@ -395,8 +396,8 @@ open class FormTextViewHolder(inflater: LayoutInflater, resource: Int, parent: V
 
 open class FormPasswordViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormTextViewHolder(inflater, resource, parent) {
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemPassword) {
             if (s.shownPassword) {
                 valueView?.transformationMethod = HideReturnsTransformationMethod.getInstance()
@@ -410,8 +411,8 @@ open class FormPasswordViewHolder(inflater: LayoutInflater, resource: Int, paren
 open class FormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormBaseTextViewHolder(inflater, resource, parent) {
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
 
         valueView?.gravity = Gravity.START
         valueView?.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
@@ -426,8 +427,8 @@ open class FormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, paren
         valueView?.gravity = Gravity.START
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemTextArea) {
             valueView?.minLines = s.minLines
             valueView?.maxLines = s.maxLines
@@ -443,8 +444,8 @@ open class FormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent
         imageArrowUp = itemView.findViewById(R.id.formElementArrowUp)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         itemView.setOnClickListener {
             listener?.onItemClicked(s, this)
 
@@ -480,8 +481,8 @@ open class FormActionViewHolder(inflater: LayoutInflater, resource: Int, parent:
         rightSpace = itemView.findViewById(R.id.formSapceRight)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemAction) {
             when (s.alignment) {
                 Gravity.CENTER -> {
@@ -509,8 +510,8 @@ open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent:
         switchView = itemView.findViewById(R.id.formElementSwitch)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemSwitch) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
@@ -538,8 +539,8 @@ open class FormSwitchCustomViewHolder(inflater: LayoutInflater, resource: Int, p
         switchView = itemView.findViewById(R.id.formElementSwitch)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
 
         if (s is FormItemSwitchCustom) {
             itemView.setOnClickListener {
@@ -581,8 +582,8 @@ open class FormRadioCustomViewHolder(inflater: LayoutInflater, resource: Int, pa
         radioView = itemView.findViewById(R.id.formElementRadio)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         itemView.setOnClickListener {
             if (s is FormItemRadioCustom) {
                 listener?.onItemClicked(s, this)
@@ -627,8 +628,8 @@ open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         radioView = itemView.findViewById(R.id.formElementRadio)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         itemView.setOnClickListener {
             if (s is FormItemRadio) {
                 listener?.onItemClicked(s, this)
@@ -658,8 +659,8 @@ open class FormCheckViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         checkView = itemView.findViewById(R.id.formElementCheck)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemCheck) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
@@ -686,8 +687,8 @@ open class FormCheckCustomViewHolder(inflater: LayoutInflater, resource: Int, pa
         imageView = itemView.findViewById(R.id.formElementCheck)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
 
         if (s is FormItemCheckCustom) {
             itemView.setOnClickListener {
@@ -729,8 +730,8 @@ open class FormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         valueView = itemView.findViewById(R.id.formElementValue)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemNav) {
             if (s.value.isNotEmpty()) {
                 valueView?.text = s.value
@@ -769,8 +770,8 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
         }
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemDate) {
 
             dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
@@ -847,8 +848,8 @@ open class FormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent:
         valueView = itemView.findViewById(R.id.formElementValue)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         itemView.setOnClickListener {
             showAlertWithChoice()
             listener?.onItemClicked(s, this)
@@ -945,8 +946,8 @@ open class FormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int, p
         pickerView = itemView.findViewById(R.id.formElementNumberPicker)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemPickerInline) {
             itemView.setOnClickListener {
                 if (pickerView?.visibility == View.GONE)
@@ -1013,8 +1014,8 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         collectionView = itemView.findViewById(R.id.formElementCollection)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
 
         itemView.setOnClickListener {
             if (collectionView?.visibility == View.GONE) {
@@ -1113,8 +1114,8 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
             valueView = itemView.findViewById(R.id.formElementValue)
         }
 
-        override fun bind(s: FormItem, listener: FormItemCallback?) {
-            super.bind(s, listener)
+        override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+            super.bind(s, listener, activity)
             if (s is FormItemSingleColor) {
                 valueView?.setCardBackgroundColor(Color.parseColor(s.color))
                 valueView?.radius = dpToPx(s.cornerRadius).toFloat()
@@ -1139,8 +1140,8 @@ open class FormSeekBarViewHolder(inflater: LayoutInflater, resource: Int, parent
         valueView = itemView.findViewById(R.id.formElementValue)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemSeekBar) {
             valueView?.setOnClickListener {
                 if (seekBar?.visibility == View.GONE)
@@ -1248,8 +1249,8 @@ open class FormStepperViewHolder(inflater: LayoutInflater, resource: Int, parent
         }
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
+        super.bind(s, listener, activity)
         if (s is FormItemStepper) {
 
             if (s.value >= s.minValue && s.value <= s.maxValue) {

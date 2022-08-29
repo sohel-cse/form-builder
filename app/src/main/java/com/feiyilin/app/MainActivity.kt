@@ -19,11 +19,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.app.permissions.CallBackWrapper
 import com.feiyilin.form.*
 import com.feiyilin.form.file.*
+import com.feiyilin.form.signature.FormItemSignature
 import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
@@ -61,6 +63,7 @@ class MainActivity : FormActivity() {
                 }.onDetailClicked {
 
                 }.galleryOnly(true)
+                +FormItemSignature().tag("sign").title("signature")
                 +FormItemText().title("Text").tag("text").required()
                 +FormItemText().title("Text").subTitle("with help icon").tag("help_text").clearIcon().showHelp().onHelpClicked {
                     Toast.makeText(this@MainActivity, "Help Clicked on ${it.tag}", Toast.LENGTH_SHORT).show()
@@ -521,7 +524,7 @@ class FormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         imgView = itemView.findViewById(R.id.formELementImage)
     }
 
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?, activity: AppCompatActivity?) {
 
         if (s is FormItemImage) {
             Picasso.get().load(s.image).fit().centerInside().into(imgView)

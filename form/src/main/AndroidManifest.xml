@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.feiyilin.form">
 
-    /
+    <application>
+
+
+        <activity
+            android:name=".signature.SignatureActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeNoActionBar" />
+    </application>
 </manifest>

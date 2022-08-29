@@ -8,7 +8,6 @@ import android.os.PersistableBundle
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
@@ -40,20 +39,26 @@ class SignatureActivity : AppCompatActivity(), SignaturePad.OnSignedListener, Si
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate: TEST")
         binding = ActivityFormSignatureBinding.inflate(layoutInflater)
+        Log.i(TAG, "onCreate: TEST")
         setContentView(binding.root)
 
         setupActionBar(binding.toolbar, true)
         supportActionBar!!.title = "Signature"
 
+        Log.i(TAG, "onCreate: TEST")
+
         if (intent != null) {
+            Log.i(TAG, "onCreate: TEST")
             bitmap = intent.getStringExtra(INTENT_KEY_BITMAP)
         }
 
         try {
-            val cleanImage: String = bitmap!!.replace("data:image/png;base64,", "").replace("data:image/jpeg;base64,", "")
+            Log.i(TAG, "onCreate: TEST")
+            val cleanImage: String? = bitmap?.replace("data:image/png;base64,", "")?.replace("data:image/jpeg;base64,", "")
             val decodedString = Base64.decode(cleanImage, Base64.DEFAULT)
             val decodedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
             if (decodedBitmap != null) binding.signaturePad.signatureBitmap = decodedBitmap
